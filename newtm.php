@@ -3,7 +3,7 @@
  * Plugin Name: NewTM - News Table System
  * Plugin URI: https://example.com/newtm
  * Description: ระบบจัดการข่าวแบบตารางสำหรับหน่วยงานราชการ
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: NewTM
  * Author URI: https://example.com
  * License: GPL v2 or later
@@ -17,7 +17,7 @@ if (!defined('ABSPATH')) {
 }
 
 // กำหนดค่าคงที่ของ plugin
-define('NEWTM_VERSION', '1.0.0');
+define('NEWTM_VERSION', '1.0.1');
 define('NEWTM_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('NEWTM_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('NEWTM_PLUGIN_FILE', __FILE__);
@@ -28,6 +28,10 @@ require_once NEWTM_PLUGIN_DIR . 'includes/class-taxonomy.php';
 require_once NEWTM_PLUGIN_DIR . 'includes/class-shortcodes.php';
 require_once NEWTM_PLUGIN_DIR . 'includes/class-settings.php';
 require_once NEWTM_PLUGIN_DIR . 'includes/class-elementor-checker.php';
+require_once NEWTM_PLUGIN_DIR . 'includes/class-cache-handler.php';
+require_once NEWTM_PLUGIN_DIR . 'includes/class-helper-functions.php';
+require_once NEWTM_PLUGIN_DIR . 'includes/class-debug-page.php';
+require_once NEWTM_PLUGIN_DIR . 'includes/class-manual-page.php';
 
 /**
  * คลาสหลักของ plugin
@@ -61,6 +65,9 @@ class NEWTM_Plugin {
         
         // เริ่มต้น settings
         new NEWTM_Settings();
+        
+        // เริ่มต้นหน้าคู่มือการใช้งาน
+        new NEWTM_Manual_Page();
         
         // โหลด assets
         add_action('wp_enqueue_scripts', array($this, 'enqueue_public_assets'));
@@ -102,6 +109,11 @@ class NEWTM_Plugin {
     public function enqueue_public_assets() {
         wp_enqueue_style('newtm-public', NEWTM_PLUGIN_URL . 'assets/public.css', array(), NEWTM_VERSION);
         wp_enqueue_script('newtm-public', NEWTM_PLUGIN_URL . 'assets/public.js', array('jquery'), NEWTM_VERSION, true);
+        // ส่งค่าให้ JS สำหรับ AJAX pagination
+        wp_localize_script('newtm-public', 'newtmAjax', array(
+            'url'   => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('newtm_ajax_nonce'),
+        ));
     }
     
     public function enqueue_admin_assets() {

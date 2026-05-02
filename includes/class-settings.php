@@ -174,10 +174,34 @@ function newtm_truncate_text($text, $length = 0) {
     if ($length <= 0) {
         return $text;
     }
-    
-    if (mb_strlen($text, 'UTF-8') > $length) {
-        return mb_strimwidth($text, 0, $length, '...', 'UTF-8');
+
+    // ใช้ mb_ ถ้ามี, ไม่งั้นใช้ iconv_, ไม่งั้น fallback
+    if (function_exists('mb_strlen')) {
+        if (mb_strlen($text, 'UTF-8') <= $length) {
+            return $text;
+        }
+        if (function_exists('mb_strimwidth')) {
+            return mb_strimwidth($text, 0, $length, '...', 'UTF-8');
+        }
+        if (function_exists('mb_substr')) {
+            return mb_substr($text, 0, max(1, $length - 3), 'UTF-8') . '...';
+        }
     }
-    
-    return $text;
+
+    if (function_exists('iconv_strlen')) {
+        $text_len = iconv_strlen($text, 'UTF-8');
+        if ($text_len === false || $text_len <= $length) {
+            return $text;
+        }
+        if (function_exists('iconv_substr')) {
+            $truncated = iconv_substr($text, 0, max(1, $length - 3), 'UTF-8');
+            return $truncated . '...';
+        }
+    }
+
+    // Last resort: ใช้ substr ธรรมดา
+    if (strlen($text) <= $length) {
+        return $text;
+    }
+    return substr($text, 0, max(1, $length - 3)) . '...';
 }

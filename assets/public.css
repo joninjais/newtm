@@ -531,3 +531,53 @@
         font-size: 12px;
     }
 }
+
+/* ─── Shortcode Pagination ─────────────────────────── */
+.newtm-shortcode-pagination {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    padding: 6px 0 2px;
+    border-top: 1px solid #e8def8;
+}
+
+.newtm-pg-btn {
+    padding: 4px 10px;
+    border: 1px solid #c4b5fd;
+    border-radius: 5px;
+    background: #fff;
+    color: #3b1478;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all .15s;
+    line-height: 1.5;
+    min-width: 30px;
+    text-align: center;
+}
+
+.newtm-pg-btn:hover {
+    background: #ede9fe;
+    border-color: #7c3aed;
+    color: #7c3aed;
+}
+
+.newtm-pg-btn.active {
+    background: #7c3aed;
+    border-color: #7c3aed;
+    color: #fff;
+    pointer-events: none;
+}
+
+.newtm-pg-btn:disabled {
+    opacity: .4;
+    pointer-events: none;
+}
+
+/* loading overlay */
+.newtm-news-section.newtm-loading {
+    opacity: .5;
+    pointer-events: none;
+}

@@ -11,6 +11,7 @@ class NEWTM_Post_Type {
     
     public function __construct() {
         add_action('init', array($this, 'register_post_type'));
+        add_action('pre_get_posts', array($this, 'set_archive_posts_per_page'));
     }
     
     public function register_post_type() {
@@ -57,5 +58,17 @@ class NEWTM_Post_Type {
         );
         
         register_post_type('newtm_news', $args);
+    }
+
+    /**
+     * กำหนด 10 ข่าวต่อหน้าสำหรับ archive และ taxonomy ของ newtm_news
+     */
+    public function set_archive_posts_per_page($query) {
+        if (is_admin() || !$query->is_main_query()) {
+            return;
+        }
+        if ($query->is_post_type_archive('newtm_news') || $query->is_tax('newtm_category')) {
+            $query->set('posts_per_page', 10);
+        }
     }
 }
